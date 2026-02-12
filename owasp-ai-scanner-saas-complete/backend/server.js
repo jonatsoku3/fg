@@ -4,8 +4,10 @@ require("dotenv").config();
 
 const zapService = require("./zapService");
 const aiService = require("./aiService");
+const testData = require("./testData");
 
 const app = express();
+const USE_MOCK_DATA = process.env.USE_MOCK_DATA === 'true';
 
 app.use(cors());
 app.use(express.json());
@@ -33,9 +35,21 @@ app.post("/scan", async (req, res) => {
             return res.status(400).json({ error: "Invalid URL format" });
         }
 
-        console.log("[v0] Starting ZAP scan for:", url);
-        const alerts = await zapService.scan(url);
-        console.log("[v0] ZAP scan complete. Found", alerts.length, "alerts");
+        let alerts;
+        
+        if (USE_MOCK_DATA) {
+            console.log("[v0] TEST MODE: Using mock vulnerability data");
+            alerts = testData.getMockData(url);
+        } else {
+            console.log("[v0] Starting ZAP scan for:", url);
+            alerts = await zapService.scan(url);
+            console.log("[v0] ZAP scan complete. Found", alerts.length, "alerts");
+        }
+
+        if (alerts.length === 0) {
+            console.log("[v0] No vulnerabilities found");
+            return res.json([]);
+        }
 
         console.log("[v0] Starting AI analysis...");
         const analyzed = await aiService.explain(alerts);
