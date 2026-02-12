@@ -15,19 +15,25 @@ function removeDuplicate(alerts) {
 async function analyze(vuln) {
     try {
         const prompt = `
-Explain this security vulnerability in Thai language (simple to understand):
+คุณเป็นผู้เชี่ยวชาญด้านความปลอดภัยไซเบอร์ กรุณาวิเคราะห์ช่องโหว่นี้เป็นภาษาไทยอย่างละเอียด:
 
-Name: ${vuln.name}
-Severity: ${vuln.risk}
-Description: ${vuln.description}
-Solution: ${vuln.solution}
+ชื่อช่องโหว่: ${vuln.name}
+ระดับความเสี่ยง: ${vuln.risk}
+รายละเอียด: ${vuln.description}
+วิธีแก้ไขที่แนะนำ: ${vuln.solution}
 
-Please provide:
-1. What this vulnerability is
-2. Why it's dangerous
-3. How to fix it
+กรุณาให้ข้อมูลดังนี้:
 
-Keep the explanation concise and clear.
+**🔍 คำอธิบายช่องโหว่:**
+อธิบายว่าช่องโหว่นี้คืออะไร และเกิดจากสาเหตุใด (2-3 ประโยค)
+
+**⚠️ ความเสี่ยงและผลกระทบ:**
+บอกว่าหากถูกโจมตีจะเกิดอะไรขึ้น และมีผลกระทบอย่างไร (2-3 ประโยค)
+
+**✅ วิธีแก้ไขและป้องกัน:**
+ให้คำแนะนำขั้นตอนการแก้ไขอย่างชัดเจนและปฏิบัติได้จริง (3-5 ข้อแนะนำ)
+
+ให้คำตอบที่เข้าใจง่าย กระชับ และใช้ภาษาไทยที่ถูกต้อง
 `;
 
         const result = await model.generateContent(prompt);
@@ -35,7 +41,7 @@ Keep the explanation concise and clear.
 
     } catch (e) {
         console.log("AI ERROR:", e.message);
-        return "Unable to analyze this vulnerability with AI.";
+        return "ไม่สามารถวิเคราะห์ช่องโหว่นี้ด้วย AI ได้ในขณะนี้";
     }
 }
 
@@ -73,12 +79,13 @@ async function summary(alerts) {
         const unique = removeDuplicate(alerts);
 
         if (unique.length === 0) {
-            return "No security vulnerabilities were found during the scan.";
+            return "ไม่พบช่องโหว่ด้านความปลอดภัยในการสแกนครั้งนี้ เว็บไซต์ของคุณมีความปลอดภัยในระดับดี";
         }
 
         const vulnSummary = unique.map(v => ({
             name: v.name,
-            risk: v.risk
+            risk: v.risk,
+            description: v.description
         }));
 
         const riskCounts = {
@@ -89,23 +96,25 @@ async function summary(alerts) {
         };
 
         const prompt = `
-You are a cybersecurity expert. Provide an executive summary of this security scan in Thai language.
+คุณเป็นผู้เชี่ยวชาญด้านความปลอดภัยไซเบอร์ ให้สรุปผลการสแกนความปลอดภัยเป็นภาษาไทยสำหรับผู้บริหาร
 
-Vulnerabilities found: ${unique.length}
-- High Risk: ${riskCounts.High}
-- Medium Risk: ${riskCounts.Medium}
-- Low Risk: ${riskCounts.Low}
-- Informational: ${riskCounts.Informational}
+**สถิติช่องโหว่ที่พบ:**
+- ทั้งหมด: ${unique.length} ช่องโหว่
+- ความเสี่ยงสูง (High): ${riskCounts.High} ช่องโหว่
+- ความเสี่ยงกลาง (Medium): ${riskCounts.Medium} ช่องโหว่
+- ความเสี่ยงต่ำ (Low): ${riskCounts.Low} ช่องโหว่
+- ข้อมูลเพิ่มเติม (Informational): ${riskCounts.Informational} รายการ
 
-Vulnerability details:
+**รายการช่องโหว่:**
 ${JSON.stringify(vulnSummary, null, 2).slice(0, 3000)}
 
-Please provide:
-1. Overall security assessment
-2. Most critical issues to address first
-3. Recommended immediate actions
+กรุณาให้:
+1. **ประเมินความปลอดภัยโดยรวม** - สรุปว่าระบบมีความปลอดภัยอยู่ในระดับใด
+2. **ช่องโหว่สำคัญที่ต้องแก้ไขเร่งด่วน** - ระบุช่องโหว่ที่มีความเสี่ยงสูงที่สุด
+3. **ขั้นตอนการแก้ไขที่แนะนำ** - ให้คำแนะนำว่าควรแก้ไขอะไรก่อนหลัง
+4. **ผลกระทบหากไม่แก้ไข** - เตือนถึงความเสี่ยงที่อาจเกิดขึ้น
 
-Keep it concise (3-4 sentences maximum) and executive-level.
+ให้คำตอบเป็นภาษาไทยที่เข้าใจง่าย กระชับ แต่ครอบคลุม (ประมาณ 4-6 ประโยค) เหมาะสำหรับผู้บริหาร
 `;
 
         const result = await model.generateContent(prompt);
@@ -113,7 +122,7 @@ Keep it concise (3-4 sentences maximum) and executive-level.
 
     } catch (e) {
         console.log("SUMMARY ERROR:", e.message);
-        return "Unable to generate AI summary at this time.";
+        return "ไม่สามารถสร้างสรุปผลด้วย AI ได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง";
     }
 }
 

@@ -627,11 +627,33 @@ body {
   --risk-color: #71717a;
 }
 
+.vuln-analysis {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+
 .vuln-description {
   font-size: 15px;
-  line-height: 1.7;
+  line-height: 1.8;
   color: var(--color-text-secondary);
-  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+.vuln-description:last-child {
+  margin-bottom: 0;
+}
+
+.vuln-description strong {
+  color: var(--color-text-primary);
+  font-weight: 700;
+  display: block;
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.vuln-description strong:first-child {
+  margin-top: 0;
 }
 
 /* Footer */

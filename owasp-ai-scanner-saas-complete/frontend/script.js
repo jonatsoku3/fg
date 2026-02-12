@@ -85,6 +85,12 @@ async function scan() {
             const riskLevel = (v.risk || 'informational').toLowerCase();
             const riskClass = `risk-${riskLevel.replace(' ', '-')}`;
             
+            // Format AI analysis with proper line breaks
+            const aiAnalysis = (v.ai || 'ไม่มีข้อมูลเพิ่มเติม')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\n\n/g, '</p><p class="vuln-description">')
+                .replace(/\n/g, '<br>');
+            
             resultsHtml += `
                 <div class="vuln-card">
                     <div class="vuln-header">
@@ -93,7 +99,9 @@ async function scan() {
                             <span class="vuln-risk-badge ${riskClass}">${escapeHtml(v.risk || 'Info')}</span>
                         </div>
                     </div>
-                    <p class="vuln-description">${escapeHtml(v.ai || 'No additional information available.')}</p>
+                    <div class="vuln-analysis">
+                        <p class="vuln-description">${aiAnalysis}</p>
+                    </div>
                 </div>
             `;
         });
