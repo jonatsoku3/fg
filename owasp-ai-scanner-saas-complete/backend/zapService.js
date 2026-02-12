@@ -1,7 +1,7 @@
 const axios = require("axios");
 const http = require("http");
 
-const ZAP = process.env.ZAP_URL || "http://host.docker.internal:8080";
+const ZAP = process.env.ZAP_URL || "http://localhost:8081";
 
 // Configure HTTP agent with no keep-alive for ZAP compatibility
 const agent = new http.Agent({ 
