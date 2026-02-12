@@ -1,115 +1,111 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>SecureScan • AI-Powered Security Analysis</title>
+<title>ระบบตรวจสอบช่องโหว่ด้านความปลอดภัยเว็บไซต์ด้วย AI | โปรเจคจบการศึกษา</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css"/>
+<link rel="stylesheet" href="style-student.css"/>
 </head>
 
 <body>
 
-<!-- Animated Background -->
-<div class="background-gradient"></div>
-<div class="background-grid"></div>
-
-<div class="container">
+<div class="page-wrapper">
   
-  <!-- Header -->
-  <header class="header">
-    <div class="logo">
-      <div class="logo-icon">
-        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M14 4L8 8V14C8 17.31 10.69 20.32 14 21C17.31 20.32 20 17.31 20 14V8L14 4Z" fill="currentColor"/>
-        </svg>
-      </div>
-      <span class="logo-text">SecureScan</span>
-      <span class="logo-badge">BETA</span>
+  <!-- Project Header -->
+  <header class="project-header">
+    <div class="university-info">
+      <h2 class="university-name">มหาวิทยาลัยเทคโนโลยีราชมงคล</h2>
+      <p class="faculty-name">คณะเทคโนโลยีสารสนเทศ สาขาวิชาวิทยาการคอมพิวเตอร์</p>
     </div>
-    <nav class="nav">
-      <a href="#" class="nav-link">Documentation</a>
-      <a href="#" class="nav-link">API</a>
-      <button class="nav-button">Sign In</button>
-    </nav>
+    <div class="project-info">
+      <h1 class="project-title">ระบบตรวจสอบช่องโหว่ด้านความปลอดภัยเว็บไซต์</h1>
+      <h2 class="project-subtitle">โดยใช้เทคนิค OWASP ZAP และ Artificial Intelligence</h2>
+      <div class="student-info">
+        <p><strong>ผู้จัดทำ:</strong> นายจอนนี่ โซโตกุ (รหัสนักศึกษา 65160000)</p>
+        <p><strong>อาจารย์ที่ปรึกษา:</strong> ดร.สมชาย ใจดี</p>
+        <p><strong>ปีการศึกษา:</strong> 2567</p>
+      </div>
+    </div>
   </header>
 
-  <!-- Hero Section -->
-  <main class="main">
-    <div class="hero">
-      <div class="hero-badge">
-        <span class="badge-dot"></span>
-        AI-Powered Security Analysis
-      </div>
-      <h1 class="hero-title">
-        Comprehensive <span class="gradient-text">vulnerability</span> scanning for modern web applications
-      </h1>
-      <p class="hero-description">
-        Advanced OWASP security testing powered by AI. Get actionable insights and detailed remediation steps in seconds.
+  <div class="container">
+
+    <!-- Abstract Section -->
+    <section class="abstract-section">
+      <h3 class="section-title">บทคัดย่อ</h3>
+      <p class="abstract-text">
+        โปรเจคนี้พัฒนาขึ้นเพื่อช่วยตรวจสอบช่องโหว่ด้านความปลอดภัยของเว็บไซต์โดยอัตโนมัติ 
+        โดยใช้เครื่องมือ OWASP ZAP ในการสแกนและวิเคราะห์ร่วมกับ Google Gemini AI 
+        เพื่ออธิบายผลลัพธ์เป็นภาษาไทยที่เข้าใจง่าย พร้อมคำแนะนำวิธีแก้ไขอย่างละเอียด 
+        ระบบนี้ช่วยให้ผู้ดูแลเว็บไซต์สามารถทราบและแก้ไขช่องโหว่ได้อย่างรวดเร็วและถูกต้อง
       </p>
+    </section>
 
-      <!-- Stats -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-value">10K+</div>
-          <div class="stat-label">Scans Completed</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">99.9%</div>
-          <div class="stat-label">Accuracy Rate</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">24/7</div>
-          <div class="stat-label">Monitoring</div>
-        </div>
-      </div>
-    </div>
+    <!-- Main Content -->
+    <main class="main">
+      <section class="demo-section">
+        <h3 class="section-title">ทดสอบระบบ</h3>
+        <p class="section-description">
+          กรุณากรอก URL ของเว็บไซต์ที่ต้องการตรวจสอบ ระบบจะทำการสแกนหาช่องโหว่และวิเคราะห์ผลด้วย AI
+        </p>
 
-    <!-- Scan Input -->
-    <div class="scan-card glass">
-      <div class="scan-header">
-        <h3 class="scan-title">Start Security Scan</h3>
-        <p class="scan-subtitle">Enter your website URL to begin comprehensive vulnerability analysis</p>
-      </div>
-      <div class="input-wrapper">
-        <div class="input-icon-wrapper">
-          <svg class="input-icon" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M9 1.5C4.85775 1.5 1.5 4.85775 1.5 9C1.5 13.1423 4.85775 16.5 9 16.5C13.1423 16.5 16.5 13.1423 16.5 9C16.5 4.85775 13.1423 1.5 9 1.5Z" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M6 9H12M9 6V12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
+        <!-- Scan Form -->
+        <div class="scan-card">
+          <div class="input-wrapper">
+            <label for="url" class="input-label">URL ที่ต้องการตรวจสอบ:</label>
+            <input 
+              id="url" 
+              class="scan-input" 
+              placeholder="https://example.com"
+              type="url"
+              spellcheck="false"
+            />
+            <button class="scan-button" onclick="scan()">
+              <span class="button-text">เริ่มการสแกน</span>
+            </button>
+          </div>
         </div>
-        <input 
-          id="url" 
-          class="scan-input" 
-          placeholder="https://example.com"
-          type="url"
-          spellcheck="false"
-        />
-        <button class="scan-button" onclick="scan()">
-          <span class="button-text">Start Scan</span>
-          <svg class="button-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M5 11L11 8L5 5V11Z" fill="currentColor"/>
-          </svg>
-        </button>
-      </div>
-    </div>
 
-    <!-- Results -->
-    <div id="result"></div>
-  </main>
+        <!-- Results -->
+        <div id="result"></div>
+      </section>
+
+      <!-- Technology Section -->
+      <section class="tech-section">
+        <h3 class="section-title">เทคโนโลยีที่ใช้</h3>
+        <div class="tech-grid">
+          <div class="tech-card">
+            <h4>OWASP ZAP</h4>
+            <p>เครื่องมือสแกนช่องโหว่ Open Source ที่ได้รับการยอมรับในระดับสากล</p>
+          </div>
+          <div class="tech-card">
+            <h4>Google Gemini AI</h4>
+            <p>AI Model สำหรับวิเคราะห์และอธิบายผลลัพธ์เป็นภาษาไทย</p>
+          </div>
+          <div class="tech-card">
+            <h4>Node.js & Express</h4>
+            <p>Backend Framework สำหรับจัดการ API และเชื่อมต่อระบบต่างๆ</p>
+          </div>
+          <div class="tech-card">
+            <h4>HTML/CSS/JavaScript</h4>
+            <p>Frontend Technologies สำหรับแสดงผลและ User Interface</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+  </div>
 
   <!-- Footer -->
-  <footer class="footer">
+  <footer class="project-footer">
     <div class="footer-content">
-      <p class="footer-text">Powered by OWASP ZAP & Advanced AI Analysis</p>
-      <div class="footer-links">
-        <a href="#" class="footer-link">Privacy</a>
-        <a href="#" class="footer-link">Terms</a>
-        <a href="#" class="footer-link">Security</a>
-      </div>
+      <p>โปรเจคนี้พัฒนาขึ้นเพื่อการศึกษา มหาวิทยาลัยเทคโนโลยีราชมงคล ปีการศึกษา 2567</p>
+      <p>เทคโนโลยี: OWASP ZAP, Google Gemini AI, Node.js, Express.js</p>
     </div>
   </footer>
 
