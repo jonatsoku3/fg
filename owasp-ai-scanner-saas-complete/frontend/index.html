@@ -1,0 +1,77 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SecureScan • AI-Powered Security Analysis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css"/>
+</head>
+
+<body>
+
+<div class="container">
+  
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="32" height="32" rx="8" fill="currentColor"/>
+        <path d="M16 8L10 12V18C10 21.31 12.69 24.32 16 25C19.31 24.32 22 21.31 22 18V12L16 8Z" fill="black" stroke="black" stroke-width="1.5"/>
+      </svg>
+      <span class="logo-text">SecureScan</span>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="main">
+    <div class="hero">
+      <div class="hero-badge">AI-Powered Security Analysis</div>
+      <h1 class="hero-title">
+        Scan your website for <span class="gradient-text">vulnerabilities</span>
+      </h1>
+      <p class="hero-description">
+        Comprehensive OWASP security scanning with AI-powered insights and actionable recommendations
+      </p>
+    </div>
+
+    <!-- Scan Input -->
+    <div class="scan-card">
+      <div class="input-wrapper">
+        <svg class="input-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2Z" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M7 10H13M10 7V13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input 
+          id="url" 
+          class="scan-input" 
+          placeholder="https://example.com"
+          type="url"
+          spellcheck="false"
+        />
+        <button class="scan-button" onclick="scan()">
+          <span class="button-text">Scan Now</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="result"></div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>Powered by OWASP ZAP & AI Analysis</p>
+  </footer>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
