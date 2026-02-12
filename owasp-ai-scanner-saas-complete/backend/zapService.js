@@ -90,68 +90,150 @@ async function waitActiveScan(maxWaitTime = 600000) {
     console.log("[v0] Active scan complete");
 }
 
-// Main scan function
+// Main scan function with 100% ZAP capabilities
 async function scan(target) {
     try {
-        console.log("[v0] Starting security scan for:", target);
+        console.log("[v0] ========================================");
+        console.log("[v0] Starting FULL ZAP security scan");
+        console.log("[v0] Target:", target);
         console.log("[v0] ZAP URL:", ZAP);
+        console.log("[v0] ========================================");
 
-        // Test connection first
-        console.log("[v0] Testing ZAP connection...");
+        // Test connection
+        console.log("[v0] Step 1/7: Testing ZAP connection...");
         const versionRes = await safeRequest(`${ZAP}/JSON/core/view/version/`);
-        console.log("[v0] ZAP version:", versionRes.data);
+        console.log("[v0] ✓ ZAP version:", versionRes.data.version);
 
-        // Start spider
-        console.log("[v0] Initiating spider scan...");
-        const spiderRes = await safeRequest(`${ZAP}/JSON/spider/action/scan/?url=${encodeURIComponent(target)}&maxChildren=10&recurse=true`);
-        console.log("[v0] Spider started:", spiderRes.data);
+        // Access URL first (Passive scan will start automatically)
+        console.log("[v0] Step 2/7: Accessing target URL for passive scan...");
+        await safeRequest(`${ZAP}/JSON/core/action/accessUrl/?url=${encodeURIComponent(target)}`);
+        await delay(3000); // Wait for passive scan
+        console.log("[v0] ✓ Target accessed");
+
+        // Enable all scanners
+        console.log("[v0] Step 3/7: Enabling all passive scanners...");
+        await safeRequest(`${ZAP}/JSON/pscan/action/enableAllScanners/`);
+        console.log("[v0] ✓ All passive scanners enabled");
+
+        // Spider scan with maximum settings
+        console.log("[v0] Step 4/7: Starting comprehensive spider scan...");
+        const spiderRes = await safeRequest(
+            `${ZAP}/JSON/spider/action/scan/?` +
+            `url=${encodeURIComponent(target)}` +
+            `&maxChildren=50` + // Increased from 10
+            `&recurse=true` +
+            `&subtreeOnly=false`
+        );
+        console.log("[v0] ✓ Spider scan ID:", spiderRes.data.scan);
         await waitSpider();
 
-        // Check spider results
+        // Check what spider found
         const spiderResultsRes = await safeRequest(`${ZAP}/JSON/spider/view/results/`);
-        console.log("[v0] Spider found", spiderResultsRes.data.results?.length || 0, "URLs");
+        const urlsFound = spiderResultsRes.data.results?.length || 0;
+        console.log(`[v0] ✓ Spider found ${urlsFound} URLs`);
 
-        // Start active scan
-        console.log("[v0] Initiating active scan...");
-        const ascanRes = await safeRequest(`${ZAP}/JSON/ascan/action/scan/?url=${encodeURIComponent(target)}&recurse=true&inScopeOnly=false`);
-        console.log("[v0] Active scan started:", ascanRes.data);
+        // Set active scan policy to ALL
+        console.log("[v0] Step 5/7: Configuring active scan policy...");
+        await safeRequest(`${ZAP}/JSON/ascan/action/enableAllScanners/`);
+        console.log("[v0] ✓ All active scanners enabled");
+
+        // Start comprehensive active scan
+        console.log("[v0] Step 6/7: Starting comprehensive active scan...");
+        const ascanRes = await safeRequest(
+            `${ZAP}/JSON/ascan/action/scan/?` +
+            `url=${encodeURIComponent(target)}` +
+            `&recurse=true` +
+            `&inScopeOnly=false` +
+            `&scanPolicyName=` + // Use default policy (all tests)
+            `&method=` +
+            `&postData=`
+        );
+        console.log("[v0] ✓ Active scan ID:", ascanRes.data.scan);
         await waitActiveScan();
 
-        // Fetch all alerts (not just by baseurl)
-        console.log("[v0] Retrieving ALL scan results...");
-        const alertsRes = await safeRequest(`${ZAP}/JSON/core/view/alerts/`);
+        // Wait for passive scan to complete
+        console.log("[v0] Step 7/7: Waiting for passive scan completion...");
+        let recordsToScan = 1;
+        let iterations = 0;
+        while (recordsToScan > 0 && iterations < 30) {
+            const pscanRes = await safeRequest(`${ZAP}/JSON/pscan/view/recordsToScan/`);
+            recordsToScan = parseInt(pscanRes.data.recordsToScan) || 0;
+            if (recordsToScan > 0) {
+                console.log(`[v0] Passive scan: ${recordsToScan} records remaining...`);
+                await delay(2000);
+            }
+            iterations++;
+        }
+        console.log("[v0] ✓ Passive scan complete");
+
+        // Fetch ALL alerts (both active and passive)
+        console.log("[v0] ========================================");
+        console.log("[v0] Collecting scan results...");
+        const alertsRes = await safeRequest(`${ZAP}/JSON/core/view/alerts/?baseurl=&start=&count=&riskId=`);
         
         let alerts = alertsRes.data.alerts || [];
-        console.log(`[v0] Total alerts in ZAP: ${alerts.length}`);
+        console.log(`[v0] Total alerts from ZAP: ${alerts.length}`);
 
-        // Filter alerts for target URL
-        alerts = alerts.filter(alert => alert.url && alert.url.includes(new URL(target).hostname));
-        console.log(`[v0] Filtered alerts for ${target}: ${alerts.length}`);
+        // Filter for target domain
+        const targetHostname = new URL(target).hostname;
+        alerts = alerts.filter(alert => {
+            if (!alert.url) return false;
+            try {
+                return new URL(alert.url).hostname === targetHostname;
+            } catch {
+                return false;
+            }
+        });
+        
+        console.log(`[v0] Alerts for ${targetHostname}: ${alerts.length}`);
 
-        // If no alerts found, log details
-        if (alerts.length === 0) {
-            console.log("[v0] No vulnerabilities found. This could mean:");
-            console.log("  1. The website is secure");
-            console.log("  2. The scan didn't complete properly");
-            console.log("  3. ZAP couldn't access the website");
+        // Display detailed summary
+        if (alerts.length > 0) {
+            const riskCounts = {
+                High: alerts.filter(a => a.risk === 'High').length,
+                Medium: alerts.filter(a => a.risk === 'Medium').length,
+                Low: alerts.filter(a => a.risk === 'Low').length,
+                Informational: alerts.filter(a => a.risk === 'Informational').length
+            };
+            console.log("[v0] Alert breakdown:");
+            console.log(`[v0]   High Risk: ${riskCounts.High}`);
+            console.log(`[v0]   Medium Risk: ${riskCounts.Medium}`);
+            console.log(`[v0]   Low Risk: ${riskCounts.Low}`);
+            console.log(`[v0]   Informational: ${riskCounts.Informational}`);
             
-            // Check sites in scope
-            const sitesRes = await safeRequest(`${ZAP}/JSON/core/view/sites/`);
-            console.log("[v0] Sites scanned:", sitesRes.data.sites);
+            // Show unique vulnerability types
+            const uniqueVulns = [...new Set(alerts.map(a => a.name))];
+            console.log(`[v0] Unique vulnerabilities found: ${uniqueVulns.length}`);
+            uniqueVulns.forEach(name => {
+                console.log(`[v0]   - ${name}`);
+            });
         } else {
-            console.log("[v0] Alert summary:");
-            const riskCounts = alerts.reduce((acc, alert) => {
-                acc[alert.risk] = (acc[alert.risk] || 0) + 1;
-                return acc;
-            }, {});
-            console.log(riskCounts);
+            console.log("[v0] ⚠ No vulnerabilities detected");
+            console.log("[v0] Possible reasons:");
+            console.log("[v0]   - Website is well secured");
+            console.log("[v0]   - Website blocked ZAP scanner");
+            console.log("[v0]   - Website requires authentication");
+            console.log("[v0]   - Network/firewall restrictions");
+            
+            // Show what was scanned
+            const sitesRes = await safeRequest(`${ZAP}/JSON/core/view/sites/`);
+            console.log("[v0] Sites in ZAP session:", sitesRes.data.sites);
+            
+            const urlsRes = await safeRequest(`${ZAP}/JSON/core/view/urls/`);
+            console.log("[v0] URLs visited:", urlsRes.data.urls?.length || 0);
         }
+
+        console.log("[v0] ========================================");
+        console.log("[v0] Scan complete!");
+        console.log("[v0] ========================================");
 
         return alerts;
 
     } catch (err) {
-        console.error("[v0] SCAN FAILED:", err.message);
-        console.error("[v0] Full error:", err);
+        console.error("[v0] ========================================");
+        console.error("[v0] SCAN FAILED!");
+        console.error("[v0] Error:", err.message);
+        console.error("[v0] ========================================");
         throw new Error(`Security scan failed: ${err.message}`);
     }
 }

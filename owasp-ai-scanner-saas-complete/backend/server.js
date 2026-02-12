@@ -4,10 +4,8 @@ require("dotenv").config();
 
 const zapService = require("./zapService");
 const aiService = require("./aiService");
-const testData = require("./testData");
 
 const app = express();
-const USE_MOCK_DATA = process.env.USE_MOCK_DATA === 'true';
 
 app.use(cors());
 app.use(express.json());
@@ -35,23 +33,19 @@ app.post("/scan", async (req, res) => {
             return res.status(400).json({ error: "Invalid URL format" });
         }
 
-        let alerts;
-        
-        if (USE_MOCK_DATA) {
-            console.log("[v0] TEST MODE: Using mock vulnerability data");
-            alerts = testData.getMockData(url);
-        } else {
-            console.log("[v0] Starting ZAP scan for:", url);
-            alerts = await zapService.scan(url);
-            console.log("[v0] ZAP scan complete. Found", alerts.length, "alerts");
-        }
+        // Start ZAP scan (100% real scanning)
+        console.log("[v0] Starting comprehensive ZAP scan for:", url);
+        const alerts = await zapService.scan(url);
+        console.log("[v0] ZAP scan complete. Found", alerts.length, "alerts");
 
+        // If no vulnerabilities found, return empty array
         if (alerts.length === 0) {
-            console.log("[v0] No vulnerabilities found");
+            console.log("[v0] No vulnerabilities detected");
             return res.json([]);
         }
 
-        console.log("[v0] Starting AI analysis...");
+        // Analyze with AI
+        console.log("[v0] Starting AI analysis for", alerts.length, "vulnerabilities...");
         const analyzed = await aiService.explain(alerts);
         console.log("[v0] AI analysis complete");
 
