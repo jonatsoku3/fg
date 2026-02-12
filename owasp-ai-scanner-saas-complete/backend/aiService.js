@@ -3,65 +3,118 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const model = genAI.getGenerativeModel({
-    model: "gemini-3-flash-preview"
+    model: "gemini-1.5-flash"
 });
 
-function removeDuplicate(alerts){
-
+function removeDuplicate(alerts) {
     return [...new Map(
         alerts.map(v => [v.name, v])
     ).values()];
 }
 
-async function analyze(vuln){
-
-    try{
-
+async function analyze(vuln) {
+    try {
         const prompt = `
-อธิบายช่องโหว่นี้เป็นภาษาไทยแบบเข้าใจง่าย:
+Explain this security vulnerability in Thai language (simple to understand):
 
-ชื่อ: ${vuln.name}
-ความรุนแรง: ${vuln.risk}
-รายละเอียด: ${vuln.description}
-วิธีแก้: ${vuln.solution}
+Name: ${vuln.name}
+Severity: ${vuln.risk}
+Description: ${vuln.description}
+Solution: ${vuln.solution}
+
+Please provide:
+1. What this vulnerability is
+2. Why it's dangerous
+3. How to fix it
+
+Keep the explanation concise and clear.
 `;
 
         const result = await model.generateContent(prompt);
-
         return result.response.text();
 
-    }catch(e){
-
+    } catch (e) {
         console.log("AI ERROR:", e.message);
-        return "AI วิเคราะห์ไม่สำเร็จ";
+        return "Unable to analyze this vulnerability with AI.";
     }
 }
 
-async function summary(alerts){
-
-    try{
-
+async function explain(alerts) {
+    try {
         const unique = removeDuplicate(alerts);
 
-        if(unique.length === 0){
-            return "ไม่พบช่องโหว่ในระบบ";
+        if (unique.length === 0) {
+            return [];
         }
 
-        const prompt = `
-สรุปรายงานช่องโหว่เว็บเป็นภาษาไทย:
+        const analyzed = await Promise.all(
+            unique.map(async (vuln) => {
+                const ai = await analyze(vuln);
+                return {
+                    name: vuln.name,
+                    risk: vuln.risk,
+                    description: vuln.description,
+                    solution: vuln.solution,
+                    ai: ai
+                };
+            })
+        );
 
-${JSON.stringify(unique).slice(0,4000)}
-`;
+        return analyzed;
 
-        const result = await model.generateContent(prompt);
-
-        return result.response.text();
-
-    }catch(e){
-
-        console.log("SUMMARY ERROR:", e.message);
-        return "ไม่สามารถสรุปผลได้";
+    } catch (e) {
+        console.log("EXPLAIN ERROR:", e.message);
+        return alerts;
     }
 }
 
-module.exports = { analyze, summary };
+async function summary(alerts) {
+    try {
+        const unique = removeDuplicate(alerts);
+
+        if (unique.length === 0) {
+            return "No security vulnerabilities were found during the scan.";
+        }
+
+        const vulnSummary = unique.map(v => ({
+            name: v.name,
+            risk: v.risk
+        }));
+
+        const riskCounts = {
+            High: unique.filter(v => v.risk === 'High').length,
+            Medium: unique.filter(v => v.risk === 'Medium').length,
+            Low: unique.filter(v => v.risk === 'Low').length,
+            Informational: unique.filter(v => v.risk === 'Informational').length
+        };
+
+        const prompt = `
+You are a cybersecurity expert. Provide an executive summary of this security scan in Thai language.
+
+Vulnerabilities found: ${unique.length}
+- High Risk: ${riskCounts.High}
+- Medium Risk: ${riskCounts.Medium}
+- Low Risk: ${riskCounts.Low}
+- Informational: ${riskCounts.Informational}
+
+Vulnerability details:
+${JSON.stringify(vulnSummary, null, 2).slice(0, 3000)}
+
+Please provide:
+1. Overall security assessment
+2. Most critical issues to address first
+3. Recommended immediate actions
+
+Keep it concise (3-4 sentences maximum) and executive-level.
+`;
+
+        const result = await model.generateContent(prompt);
+        return result.response.text();
+
+    } catch (e) {
+        console.log("SUMMARY ERROR:", e.message);
+        return "Unable to generate AI summary at this time.";
+    }
+}
+
+module.exports = { analyze, explain, summary };

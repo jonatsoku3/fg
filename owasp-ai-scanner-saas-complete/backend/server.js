@@ -10,50 +10,84 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Health check endpoint
+app.get("/health", (req, res) => {
+    res.json({ status: "ok", service: "SecureScan API" });
+});
+
+// Main scan endpoint
 app.post("/scan", async (req, res) => {
     try {
-
-        console.log("SCAN REQUEST:", req.body);
+        console.log("[v0] SCAN REQUEST:", req.body);
 
         const { url } = req.body;
 
+        if (!url) {
+            return res.status(400).json({ error: "URL is required" });
+        }
+
+        // Validate URL format
+        try {
+            new URL(url);
+        } catch (e) {
+            return res.status(400).json({ error: "Invalid URL format" });
+        }
+
+        console.log("[v0] Starting ZAP scan for:", url);
         const alerts = await zapService.scan(url);
+        console.log("[v0] ZAP scan complete. Found", alerts.length, "alerts");
 
-        console.log("ZAP RESULT:", alerts);
+        console.log("[v0] Starting AI analysis...");
+        const analyzed = await aiService.explain(alerts);
+        console.log("[v0] AI analysis complete");
 
-        const ai = await aiService.explain(alerts);
-
-        console.log("AI RESULT:", ai);
-
-        console.log("FINAL RESPONSE:", ai);
-        res.json(ai);
-
+        res.json(analyzed);
 
     } catch (err) {
-
-        console.error("SCAN ERROR:", err);
-
-        res.status(500).json({ error: err.message });
-
+        console.error("[v0] SCAN ERROR:", err);
+        res.status(500).json({ 
+            error: "Scan failed", 
+            message: err.message 
+        });
     }
 });
 
-app.post("/ai-summary", async (req,res)=>{
-
+// AI summary endpoint
+app.post("/ai-summary", async (req, res) => {
     try {
+        console.log("[v0] SUMMARY REQUEST");
 
-        const summary = await aiService.summary(req.body.alerts);
-        res.json({summary});
+        const { alerts } = req.body;
 
-    } catch(err){
+        if (!alerts || !Array.isArray(alerts)) {
+            return res.status(400).json({ 
+                summary: "Invalid request format" 
+            });
+        }
 
-        console.error("SUMMARY ERROR:", err);
-        res.json({summary:"AI Summary Failed"});
+        const summary = await aiService.summary(alerts);
+        res.json({ summary });
 
+    } catch (err) {
+        console.error("[v0] SUMMARY ERROR:", err);
+        res.json({ 
+            summary: "Unable to generate summary at this time." 
+        });
     }
-
 });
 
-app.listen(process.env.PORT, ()=>{
-    console.log("Server running on port", process.env.PORT);
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error("[v0] Unhandled error:", err);
+    res.status(500).json({ 
+        error: "Internal server error",
+        message: err.message 
+    });
+});
+
+const PORT = process.env.PORT || 3001;
+
+app.listen(PORT, () => {
+    console.log(`[v0] SecureScan server running on port ${PORT}`);
+    console.log(`[v0] Health check: http://localhost:${PORT}/health`);
 });
