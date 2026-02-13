@@ -4,6 +4,7 @@ require("dotenv").config();
 
 const zapService = require("./zapService");
 const aiService = require("./aiService");
+const debugService = require("./debugService");
 
 const app = express();
 
@@ -80,6 +81,33 @@ app.post("/ai-summary", async (req, res) => {
         console.error("[v0] SUMMARY ERROR:", err);
         res.json({ 
             summary: "Unable to generate summary at this time." 
+        });
+    }
+});
+
+// Debug endpoint - returns mock data to test the system
+app.post("/scan-demo", async (req, res) => {
+    try {
+        console.log("[v0] DEMO SCAN REQUEST:", req.body);
+
+        const { url } = req.body;
+
+        if (!url) {
+            return res.status(400).json({ error: "URL is required" });
+        }
+
+        console.log("[v0] Returning mock vulnerability data for demo");
+        
+        // Return mock data that looks like real scan results
+        const mockData = debugService.getMockVulnerabilities(url);
+        
+        res.json(mockData);
+
+    } catch (err) {
+        console.error("[v0] DEMO SCAN ERROR:", err);
+        res.status(500).json({ 
+            error: "Demo scan failed", 
+            message: err.message 
         });
     }
 });
