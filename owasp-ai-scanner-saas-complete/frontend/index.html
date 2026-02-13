@@ -1,0 +1,116 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ระบบตรวจสอบช่องโหว่ด้านความปลอดภัยเว็บไซต์ด้วย AI | โปรเจคจบการศึกษา</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css"/>
+<link rel="stylesheet" href="style-student.css"/>
+</head>
+
+<body>
+
+<div class="page-wrapper">
+  
+  <!-- Project Header -->
+  <header class="project-header">
+    <div class="university-info">
+      <h2 class="university-name">มหาวิทยาลัยเทคโนโลยีราชมงคล</h2>
+      <p class="faculty-name">คณะเทคโนโลยีสารสนเทศ สาขาวิชาวิทยาการคอมพิวเตอร์</p>
+    </div>
+    <div class="project-info">
+      <h1 class="project-title">ระบบตรวจสอบช่องโหว่ด้านความปลอดภัยเว็บไซต์</h1>
+      <h2 class="project-subtitle">โดยใช้เทคนิค OWASP ZAP และ Artificial Intelligence</h2>
+      <div class="student-info">
+        <p><strong>ผู้จัดทำ:</strong> นายจอนนี่ โซโตกุ (รหัสนักศึกษา 65160000)</p>
+        <p><strong>อาจารย์ที่ปรึกษา:</strong> ดร.สมชาย ใจดี</p>
+        <p><strong>ปีการศึกษา:</strong> 2567</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- Abstract Section -->
+    <section class="abstract-section">
+      <h3 class="section-title">บทคัดย่อ</h3>
+      <p class="abstract-text">
+        โปรเจคนี้พัฒนาขึ้นเพื่อช่วยตรวจสอบช่องโหว่ด้านความปลอดภัยของเว็บไซต์โดยอัตโนมัติ 
+        โดยใช้เครื่องมือ OWASP ZAP ในการสแกนและวิเคราะห์ร่วมกับ Google Gemini AI 
+        เพื่ออธิบายผลลัพธ์เป็นภาษาไทยที่เข้าใจง่าย พร้อมคำแนะนำวิธีแก้ไขอย่างละเอียด 
+        ระบบนี้ช่วยให้ผู้ดูแลเว็บไซต์สามารถทราบและแก้ไขช่องโหว่ได้อย่างรวดเร็วและถูกต้อง
+      </p>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main">
+      <section class="demo-section">
+        <h3 class="section-title">ทดสอบระบบ</h3>
+        <p class="section-description">
+          กรุณากรอก URL ของเว็บไซต์ที่ต้องการตรวจสอบ ระบบจะทำการสแกนหาช่องโหว่และวิเคราะห์ผลด้วย AI
+        </p>
+
+        <!-- Scan Form -->
+        <div class="scan-card">
+          <div class="input-wrapper">
+            <label for="url" class="input-label">URL ที่ต้องการตรวจสอบ:</label>
+            <input 
+              id="url" 
+              class="scan-input" 
+              placeholder="https://example.com"
+              type="url"
+              spellcheck="false"
+            />
+            <button class="scan-button" onclick="scan()">
+              <span class="button-text">เริ่มการสแกน</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Results -->
+        <div id="result"></div>
+      </section>
+
+      <!-- Technology Section -->
+      <section class="tech-section">
+        <h3 class="section-title">เทคโนโลยีที่ใช้</h3>
+        <div class="tech-grid">
+          <div class="tech-card">
+            <h4>OWASP ZAP</h4>
+            <p>เครื่องมือสแกนช่องโหว่ Open Source ที่ได้รับการยอมรับในระดับสากล</p>
+          </div>
+          <div class="tech-card">
+            <h4>Google Gemini AI</h4>
+            <p>AI Model สำหรับวิเคราะห์และอธิบายผลลัพธ์เป็นภาษาไทย</p>
+          </div>
+          <div class="tech-card">
+            <h4>Node.js & Express</h4>
+            <p>Backend Framework สำหรับจัดการ API และเชื่อมต่อระบบต่างๆ</p>
+          </div>
+          <div class="tech-card">
+            <h4>HTML/CSS/JavaScript</h4>
+            <p>Frontend Technologies สำหรับแสดงผลและ User Interface</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="project-footer">
+    <div class="footer-content">
+      <p>โปรเจคนี้พัฒนาขึ้นเพื่อการศึกษา มหาวิทยาลัยเทคโนโลยีราชมงคล ปีการศึกษา 2567</p>
+      <p>เทคโนโลยี: OWASP ZAP, Google Gemini AI, Node.js, Express.js</p>
+    </div>
+  </footer>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
